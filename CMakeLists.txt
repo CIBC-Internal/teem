@@ -94,15 +94,16 @@ IF(NOT Teem_BUILD_SHARED_LIBS)
 ENDIF(NOT Teem_BUILD_SHARED_LIBS)
 
 OPTION(Teem_ZLIB "Build Teem with support for gzip compression." ON)
-OPTION(Teem_PNG "Build Teem with support for PNG images." ON)
+# TODO: include libpng
+#OPTION(Teem_PNG "Build Teem with support for PNG images." ON)
 OPTION(Teem_VTK_MANGLE "Build Teem using the mangled libraries from VTK for ZLIB and PNG." OFF)
 SET(Teem_VTK_ZLIB_MANGLE_IPATH "" CACHE PATH "Location of vtk_zlib_mangle.h")
 SET(Teem_VTK_TOOLKITS_IPATH "" CACHE PATH "Location of VTK Build directory for ZLIB and PNG includes.")
 
 # Can't build PNG without ZLIB, so force it on.
-IF(Teem_PNG AND NOT Teem_ZLIB)
-  SET(Teem_ZLIB ON)
-ENDIF(Teem_PNG AND NOT Teem_ZLIB)
+#IF(Teem_PNG AND NOT Teem_ZLIB)
+#  SET(Teem_ZLIB ON)
+#ENDIF(Teem_PNG AND NOT Teem_ZLIB)
 
 IF(Teem_VTK_MANGLE)
   ADD_DEFINITIONS(-DTEEM_VTK_MANGLE=1)
@@ -111,55 +112,58 @@ IF(Teem_VTK_MANGLE)
 ENDIF(Teem_VTK_MANGLE)
 
 
-SET(Teem_ZLIB_LIB "")
-SET(Teem_PNG_LIB "")
-IF(Teem_ZLIB)
-  # Find ZLIB
-  FIND_PACKAGE(ZLIB)
-  IF(ZLIB_FOUND)
-    ADD_DEFINITIONS(-DTEEM_ZLIB)
-    SET(Teem_ZLIB_LIB ${ZLIB_LIBRARIES})
-    SET(Teem_ZLIB_IPATH ${ZLIB_INCLUDE_DIR})
-  ELSE(ZLIB_FOUND)
-    # We need to set this as a cache variable, so that it will show up as
-    # being turned off in the cache.
-    MESSAGE("warning: Turning off Teem_ZLIB, because it wasn't found.")
-    SET(Teem_ZLIB OFF CACHE BOOL "Build Teem with support for gzip compression." FORCE)
-  ENDIF(ZLIB_FOUND)
+#SET(Teem_ZLIB_LIB "")
+#SET(Teem_PNG_LIB "")
+#IF(Teem_ZLIB)
+#  # Find ZLIB
+#  FIND_PACKAGE(ZLIB)
+#  IF(ZLIB_FOUND)
+#    ADD_DEFINITIONS(-DTEEM_ZLIB)
+#    SET(Teem_ZLIB_LIB ${ZLIB_LIBRARIES})
+#    SET(Teem_ZLIB_IPATH ${ZLIB_INCLUDE_DIR})
+#  ELSE(ZLIB_FOUND)
+#    # We need to set this as a cache variable, so that it will show up as
+#    # being turned off in the cache.
+#    MESSAGE("warning: Turning off Teem_ZLIB, because it wasn't found.")
+#    SET(Teem_ZLIB OFF CACHE BOOL "Build Teem with support for gzip compression." FORCE)
+#  ENDIF(ZLIB_FOUND)
+#
+#  IF(Teem_PNG)
+#    FIND_PACKAGE(PNG)
+#    IF(PNG_FOUND)
+#      ADD_DEFINITIONS(-DTEEM_PNG ${PNG_DEFINITIONS})
+#      SET(Teem_PNG_LIB ${PNG_LIBRARIES})
+#      SET(Teem_PNG_IPATH ${PNG_INCLUDE_DIR})
+#    ELSE(PNG_FOUND)
+#      # We need to set this as a cache variable, so that it will show up as
+#      # being turned off in the cache.
+#      MESSAGE("warning: Turning off Teem_PNG, because it wasn't found.")
+#      SET(Teem_PNG OFF CACHE BOOL "Build Teem with support for PNG images." FORCE)
+#    ENDIF(PNG_FOUND)
+#  ENDIF(Teem_PNG)
+#ENDIF(Teem_ZLIB)
+#
+## Try and locate BZIP2 stuff
+#OPTION(Teem_BZIP2 "Build Teem with support for bzip compression." ON)
+#SET(Teem_BZIP2_LIB "")
+#
+#IF(Teem_BZIP2)
+#  FIND_PACKAGE(BZ2)
+#
+#  IF(BZ2_FOUND)
+#    ADD_DEFINITIONS(-DTEEM_BZIP2)
+#    SET(Teem_BZIP2_LIB ${BZ2_LIBRARIES})
+#    SET(Teem_BZIP2_IPATH ${BZ2_INCLUDE_DIR})
+#  ELSE(BZ2_FOUND)
+#    # We need to set this as a cache variable, so that it will show up as
+#    # being turned off in the cache.
+#    MESSAGE("warning: Turning off Teem_BZIP2, because it wasn't found.")
+#    SET(Teem_BZIP2 OFF CACHE BOOL "Build Teem with support for bzip compression." FORCE)
+#  ENDIF(BZ2_FOUND)
+#ENDIF(Teem_BZIP2)
 
-  IF(Teem_PNG)
-    FIND_PACKAGE(PNG)
-    IF(PNG_FOUND)
-      ADD_DEFINITIONS(-DTEEM_PNG ${PNG_DEFINITIONS})
-      SET(Teem_PNG_LIB ${PNG_LIBRARIES})
-      SET(Teem_PNG_IPATH ${PNG_INCLUDE_DIR})
-    ELSE(PNG_FOUND)
-      # We need to set this as a cache variable, so that it will show up as
-      # being turned off in the cache.
-      MESSAGE("warning: Turning off Teem_PNG, because it wasn't found.")
-      SET(Teem_PNG OFF CACHE BOOL "Build Teem with support for PNG images." FORCE)
-    ENDIF(PNG_FOUND)
-  ENDIF(Teem_PNG)
-ENDIF(Teem_ZLIB)
-
-# Try and locate BZIP2 stuff
-OPTION(Teem_BZIP2 "Build Teem with support for bzip compression." ON)
-SET(Teem_BZIP2_LIB "")
-
-IF(Teem_BZIP2)
-  FIND_PACKAGE(BZ2)
-
-  IF(BZ2_FOUND)
-    ADD_DEFINITIONS(-DTEEM_BZIP2)
-    SET(Teem_BZIP2_LIB ${BZ2_LIBRARIES})
-    SET(Teem_BZIP2_IPATH ${BZ2_INCLUDE_DIR})
-  ELSE(BZ2_FOUND)
-    # We need to set this as a cache variable, so that it will show up as
-    # being turned off in the cache.
-    MESSAGE("warning: Turning off Teem_BZIP2, because it wasn't found.")
-    SET(Teem_BZIP2 OFF CACHE BOOL "Build Teem with support for bzip compression." FORCE)
-  ENDIF(BZ2_FOUND)
-ENDIF(Teem_BZIP2)
+SET(Teem_ZLIB_LIB   ${ZLIB_LIBRARY})
+SET(Teem_ZLIB_IPATH ${ZLIB_INCLUDE_DIR})
 
 # Look for threading libraries
 OPTION(Teem_PTHREAD "Build Teem with pthread library support." ON)
@@ -365,45 +369,47 @@ ENDFOREACH(dir ${Teem_LIBRARIES})
 #
 # This needs to occur after the parsing of the subdirectories.
 
+SET(SCI_TEEM_LIBRARY teem CACHE INTERNAL "Teem library" FORCE)
+
 # Create the library target
-ADD_LIBRARY(teem ${Teem_SOURCES})
+ADD_LIBRARY(${SCI_TEEM_LIBRARY} ${Teem_SOURCES})
 
 # Set up some library paths for installation.  Windows will ingore the
 # RPATH stuff, and mac will ingore the INSTALL_RPATH.  Make sure for
 # macs to set BUILD_WITH_INSTALL_RPATH OFF and set INSTALL_NAME_DIR.
 # I belive INSTALL_NAME_DIR will be ignored on linux.
-SET_TARGET_PROPERTIES(teem PROPERTIES
-  BUILD_WITH_INSTALL_RPATH OFF
-  INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib
-  INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/lib
-  SOVERSION 1
-  VERSION ${Teem_VERSION_STRING}
-  )
+#SET_TARGET_PROPERTIES(${SCI_TEEM_LIBRARY} PROPERTIES
+#  BUILD_WITH_INSTALL_RPATH OFF
+#  INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib
+#  INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/lib
+#  SOVERSION 1
+#  VERSION ${Teem_VERSION_STRING}
+#  )
 
 IF(Teem_BZIP2_LIB)
-  TARGET_LINK_LIBRARIES(teem ${Teem_BZIP2_LIB})
+  TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_BZIP2_LIB})
 ENDIF(Teem_BZIP2_LIB)
 IF(Teem_ZLIB_LIB)
-  TARGET_LINK_LIBRARIES(teem ${Teem_ZLIB_LIB})
+  TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_ZLIB_LIB})
   IF(Teem_PNG_LIB)
-    TARGET_LINK_LIBRARIES(teem ${Teem_PNG_LIB})
+    TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_PNG_LIB})
   ENDIF(Teem_PNG_LIB)
 ENDIF(Teem_ZLIB_LIB)
 
 IF(Teem_LEVMAR_LIB)
-  TARGET_LINK_LIBRARIES(teem ${Teem_LEVMAR_LIB})
+  TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_LEVMAR_LIB})
 ENDIF(Teem_LEVMAR_LIB)
 
 IF(Teem_FFTW3_LIB)
-  TARGET_LINK_LIBRARIES(teem ${Teem_FFTW3_LIB})
+  TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_FFTW3_LIB})
 ENDIF(Teem_FFTW3_LIB)
 
 IF(Teem_PTHREAD)
-  TARGET_LINK_LIBRARIES(teem ${CMAKE_THREAD_LIBS_INIT})
+  TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 ENDIF(Teem_PTHREAD)
 
 IF(UNIX)
-  TARGET_LINK_LIBRARIES(teem -lm)
+  TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} -lm)
 ENDIF(UNIX)
 
 OPTION(Teem_USE_LIB_INSTALL_SUBDIR "Add a Teem-X.Y.Z directory layer to the installation tree for libraries and archives." OFF)
@@ -413,11 +419,11 @@ ELSE(Teem_USE_LIB_INSTALL_SUBDIR)
   SET(EXTRA_INSTALL_PATH "")
 ENDIF(Teem_USE_LIB_INSTALL_SUBDIR)
 
-INSTALL(TARGETS teem
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib${EXTRA_INSTALL_PATH}
-  ARCHIVE DESTINATION lib${EXTRA_INSTALL_PATH}
-  ) 
+#INSTALL(TARGETS teem
+#  RUNTIME DESTINATION bin
+#  LIBRARY DESTINATION lib${EXTRA_INSTALL_PATH}
+#  ARCHIVE DESTINATION lib${EXTRA_INSTALL_PATH}
+#  ) 
 
 # Stand-alone programs to process hex encoding of data
 OPTION(BUILD_HEX "Build dehex and enhex" OFF)
