@@ -87,29 +87,43 @@ ENDIF(QNANHIBIT_VALUE)
 
 #-----------------------------------------------------------------------------
 # Teem build configuration options.
-OPTION(BUILD_SHARED_LIBS "Build Teem with shared libraries." OFF)
+SET(BUILD_SHARED_LIBS OFF CACHE BOOL "Build Teem with shared libraries." FORCE)
 SET(Teem_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 IF(NOT Teem_BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DTEEM_STATIC)
 ENDIF(NOT Teem_BUILD_SHARED_LIBS)
 
-OPTION(Teem_ZLIB "Build Teem with support for gzip compression." ON)
+SET(Teem_ZLIB ON CACHE BOOL "Build Teem with support for gzip compression." FORCE)
+IF(ZLIB_INCLUDE AND ZLIB_LIBRARY)
+ELSE()
+  MESSAGE(WARNING "SCI external Zlib project not found. Attempting to locate system zlib.")
+  FIND_PACKAGE(ZLIB)
+  IF(NOT ZLIB_FOUND)
+    MESSAGE(FATAL_ERROR "Zlib is required for the SCI Teem build.")
+  ENDIF()
+ENDIF()
+
+ADD_DEFINITIONS(-DTEEM_ZLIB)
+SET(Teem_ZLIB_LIB   ${ZLIB_LIBRARY})
+SET(Teem_ZLIB_IPATH ${ZLIB_INCLUDE_DIR})
+
+
 # TODO: include libpng
 #OPTION(Teem_PNG "Build Teem with support for PNG images." ON)
-OPTION(Teem_VTK_MANGLE "Build Teem using the mangled libraries from VTK for ZLIB and PNG." OFF)
-SET(Teem_VTK_ZLIB_MANGLE_IPATH "" CACHE PATH "Location of vtk_zlib_mangle.h")
-SET(Teem_VTK_TOOLKITS_IPATH "" CACHE PATH "Location of VTK Build directory for ZLIB and PNG includes.")
+#OPTION(Teem_VTK_MANGLE "Build Teem using the mangled libraries from VTK for ZLIB and PNG." OFF)
+#SET(Teem_VTK_ZLIB_MANGLE_IPATH "" CACHE PATH "Location of vtk_zlib_mangle.h")
+#SET(Teem_VTK_TOOLKITS_IPATH "" CACHE PATH "Location of VTK Build directory for ZLIB and PNG includes.")
 
 # Can't build PNG without ZLIB, so force it on.
 #IF(Teem_PNG AND NOT Teem_ZLIB)
 #  SET(Teem_ZLIB ON)
 #ENDIF(Teem_PNG AND NOT Teem_ZLIB)
 
-IF(Teem_VTK_MANGLE)
-  ADD_DEFINITIONS(-DTEEM_VTK_MANGLE=1)
-  INCLUDE_DIRECTORIES( ${Teem_VTK_TOOLKITS_IPATH} )
-  INCLUDE_DIRECTORIES( ${Teem_VTK_ZLIB_MANGLE_IPATH} )
-ENDIF(Teem_VTK_MANGLE)
+#IF(Teem_VTK_MANGLE)
+#  ADD_DEFINITIONS(-DTEEM_VTK_MANGLE=1)
+#  INCLUDE_DIRECTORIES( ${Teem_VTK_TOOLKITS_IPATH} )
+#  INCLUDE_DIRECTORIES( ${Teem_VTK_ZLIB_MANGLE_IPATH} )
+#ENDIF(Teem_VTK_MANGLE)
 
 
 #SET(Teem_ZLIB_LIB "")
@@ -161,9 +175,6 @@ ENDIF(Teem_VTK_MANGLE)
 #    SET(Teem_BZIP2 OFF CACHE BOOL "Build Teem with support for bzip compression." FORCE)
 #  ENDIF(BZ2_FOUND)
 #ENDIF(Teem_BZIP2)
-
-SET(Teem_ZLIB_LIB   ${ZLIB_LIBRARY})
-SET(Teem_ZLIB_IPATH ${ZLIB_INCLUDE_DIR})
 
 # Look for threading libraries
 OPTION(Teem_PTHREAD "Build Teem with pthread library support." ON)
