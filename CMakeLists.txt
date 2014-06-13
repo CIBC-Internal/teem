@@ -22,7 +22,7 @@
 #
 
 # This is the root Teem CMakeLists file
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 # Cmake shouldn't define WIN32 when compiling
 set(CMAKE_LEGACY_CYGWIN_WIN32 0) 
@@ -94,18 +94,7 @@ IF(NOT Teem_BUILD_SHARED_LIBS)
 ENDIF(NOT Teem_BUILD_SHARED_LIBS)
 
 SET(Teem_ZLIB ON CACHE BOOL "Build Teem with support for gzip compression." FORCE)
-IF(NOT ZLIB_INCLUDE_DIR AND NOT ZLIB_LIBRARY)
-  MESSAGE(WARNING "SCI external Zlib project not found. Attempting to locate system zlib.")
-  FIND_PACKAGE(ZLIB)
-  IF(NOT ZLIB_FOUND)
-    MESSAGE(FATAL_ERROR "Zlib is required for the SCI Teem build.")
-  ENDIF()
-ENDIF()
-
 ADD_DEFINITIONS(-DTEEM_ZLIB)
-SET(Teem_ZLIB_LIB   ${ZLIB_LIBRARY})
-SET(Teem_ZLIB_IPATH ${ZLIB_INCLUDE_DIR})
-
 
 # TODO: include libpng
 #OPTION(Teem_PNG "Build Teem with support for PNG images." ON)
@@ -332,8 +321,8 @@ INCLUDE_DIRECTORIES(
 
 ## Add external library path includes
 IF(Teem_ZLIB)
-  INCLUDE_DIRECTORIES(${Teem_ZLIB_IPATH})
-  INCLUDE_DIRECTORIES(${Teem_ZLIB_DLLCONF_IPATH})
+  INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+
   IF(Teem_PNG)
     INCLUDE_DIRECTORIES(${Teem_PNG_IPATH})
     INCLUDE_DIRECTORIES(${Teem_PNG_DLLCONF_IPATH})
@@ -399,12 +388,21 @@ ADD_LIBRARY(${SCI_TEEM_LIBRARY} ${Teem_SOURCES})
 IF(Teem_BZIP2_LIB)
   TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_BZIP2_LIB})
 ENDIF(Teem_BZIP2_LIB)
-IF(Teem_ZLIB_LIB)
-  TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_ZLIB_LIB})
+IF(Teem_ZLIB)
+  IF(CMAKE_GENERATOR MATCHES "Makefiles")
+    TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY}
+      ${ZLIB_LIBRARY}
+    )
+  ELSE()
+    TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY}
+	  optimized ${ZLIB_LIBRARY_RELEASE}
+	  debug ${ZLIB_LIBRARY_DEBUG}
+	)
+  ENDIF()
   IF(Teem_PNG_LIB)
     TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_PNG_LIB})
   ENDIF(Teem_PNG_LIB)
-ENDIF(Teem_ZLIB_LIB)
+ENDIF()
 
 IF(Teem_LEVMAR_LIB)
   TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_LEVMAR_LIB})
@@ -443,23 +441,24 @@ ENDIF(BUILD_HEX)
 
 #-----------------------------------------------------------------------------
 # For testing
-OPTION(BUILD_TESTING "Enable this to perform testing of Teem" ON)
+#OPTION(BUILD_TESTING "Enable this to perform testing of Teem" OFF)
+#MARK_AS_ADVANCED(BUILD_TESTING)
 
-IF(BUILD_TESTING)
-  INCLUDE(CTest)
-  ENABLE_TESTING()
-  SET(BUILDNAME "${BUILDNAME}" CACHE STRING "Name of build on the dashboard")
-  MARK_AS_ADVANCED(BUILDNAME)
-  MARK_AS_ADVANCED(TCL_TCLSH)
-ENDIF(BUILD_TESTING)
+#IF(BUILD_TESTING)
+#  INCLUDE(CTest)
+#  ENABLE_TESTING()
+#  SET(BUILDNAME "${BUILDNAME}" CACHE STRING "Name of build on the dashboard")
+#  MARK_AS_ADVANCED(BUILDNAME)
+#  MARK_AS_ADVANCED(TCL_TCLSH)
+#ENDIF(BUILD_TESTING)
 
 #-----------------------------------------------------------------------------
 # Now compile the binaries
-ADD_SUBDIRECTORY(src/bin)
+#ADD_SUBDIRECTORY(src/bin)
 
-IF(BUILD_TESTING)
-  ADD_SUBDIRECTORY(Testing)
-ENDIF(BUILD_TESTING)
+#IF(BUILD_TESTING)
+#  ADD_SUBDIRECTORY(Testing)
+#ENDIF(BUILD_TESTING)
 
 #-----------------------------------------------------------------------------
 # Help outside projects build Teem projects.
@@ -520,14 +519,14 @@ CONFIGURE_FILE("${Teem_SOURCE_DIR}/CMake/TeemConfig.cmake.in"
   "${Teem_BINARY_DIR}/CMake/TeemConfig.cmake" @ONLY IMMEDIATE)
 
 
-INSTALL(FILES ${Teem_INSTALLED_HEADER_FILES}
-  DESTINATION include/teem
-  )
+#INSTALL(FILES ${Teem_INSTALLED_HEADER_FILES}
+#  DESTINATION include/teem
+#  )
 
-INSTALL(FILES
-  "${Teem_BINARY_DIR}/CMake/TeemConfig.cmake"
-  "${Teem_SOURCE_DIR}/CMake/TeemUse.cmake"
-  "${Teem_BINARY_DIR}/TeemBuildSettings.cmake"
-  "${Teem_BINARY_DIR}/TeemLibraryDepends.cmake"
-  DESTINATION lib${EXTRA_INSTALL_PATH}
-  )
+#INSTALL(FILES
+#  "${Teem_BINARY_DIR}/CMake/TeemConfig.cmake"
+#  "${Teem_SOURCE_DIR}/CMake/TeemUse.cmake"
+#  "${Teem_BINARY_DIR}/TeemBuildSettings.cmake"
+#  "${Teem_BINARY_DIR}/TeemLibraryDepends.cmake"
+#  DESTINATION lib${EXTRA_INSTALL_PATH}
+#  )
