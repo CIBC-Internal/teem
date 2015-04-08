@@ -486,12 +486,12 @@ SET(Teem_EXECUTABLE_DIRS ${EXECUTABLE_OUTPUT_PATH} CACHE INTERNAL "Single output
 # 
 SET(Teem_CV_CONFIG_TO_ROOT ".")
 SET(Teem_CV_LIBRARY_DEPENDS_FILE ${Teem_BINARY_DIR}/TeemLibraryDepends.cmake)
-#SET(Teem_CV_EXECUTABLE_DIRS ${Teem_EXECUTABLE_DIRS})
-#SET(Teem_CV_LIBRARY_DIRS ${LIBRARY_OUTPUT_PATH})
+SET(Teem_CV_EXECUTABLE_DIRS ${Teem_EXECUTABLE_DIRS})
+SET(Teem_CV_LIBRARY_DIRS ${LIBRARY_OUTPUT_PATH})
 SET(Teem_CV_USE_FILE ${Teem_SOURCE_DIR}/CMake/TeemUse.cmake)
-#SET(Teem_CV_INCLUDE_DIRS "${Teem_BINARY_DIR}/include")
+SET(Teem_CV_INCLUDE_DIRS "${Teem_BINARY_DIR}/include")
 SET(Teem_CV_BUILD_SETTINGS_FILE ${Teem_BINARY_DIR}/TeemBuildSettings.cmake)
-SET(Teem_CV_BUILT_LIBRARIES teem) # The libraries built by teem.  Currently we only build the mega library.
+SET(Teem_CV_BUILT_LIBRARIES ${SCI_TEEM_LIBRARY}) # The libraries built by teem.  Currently we only build the mega library.
 
 SET(SCI_TEEM_INCLUDE "${Teem_BINARY_DIR}/include")
 
