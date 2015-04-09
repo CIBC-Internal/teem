@@ -89,15 +89,13 @@ ENDIF(QNANHIBIT_VALUE)
 # Teem build configuration options.
 SET(BUILD_SHARED_LIBS OFF CACHE BOOL "Build Teem with shared libraries." FORCE)
 SET(Teem_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
-IF(NOT Teem_BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DTEEM_STATIC)
-ENDIF(NOT Teem_BUILD_SHARED_LIBS)
+#IF(NOT Teem_BUILD_SHARED_LIBS)
+ADD_DEFINITIONS(-DTEEM_STATIC)
+#ENDIF()
 
 SET(Teem_ZLIB ON CACHE BOOL "Build Teem with support for gzip compression." FORCE)
-ADD_DEFINITIONS(-DTEEM_ZLIB)
+SET(Teem_PNG ON CACHE BOOL "Build Teem with support for PNG images." FORCE)
 
-# TODO: include libpng
-#OPTION(Teem_PNG "Build Teem with support for PNG images." ON)
 #OPTION(Teem_VTK_MANGLE "Build Teem using the mangled libraries from VTK for ZLIB and PNG." OFF)
 #SET(Teem_VTK_ZLIB_MANGLE_IPATH "" CACHE PATH "Location of vtk_zlib_mangle.h")
 #SET(Teem_VTK_TOOLKITS_IPATH "" CACHE PATH "Location of VTK Build directory for ZLIB and PNG includes.")
@@ -114,37 +112,31 @@ ADD_DEFINITIONS(-DTEEM_ZLIB)
 #ENDIF(Teem_VTK_MANGLE)
 
 
-#SET(Teem_ZLIB_LIB "")
-#SET(Teem_PNG_LIB "")
-#IF(Teem_ZLIB)
-#  # Find ZLIB
-#  FIND_PACKAGE(ZLIB)
-#  IF(ZLIB_FOUND)
-#    ADD_DEFINITIONS(-DTEEM_ZLIB)
-#    SET(Teem_ZLIB_LIB ${ZLIB_LIBRARIES})
-#    SET(Teem_ZLIB_IPATH ${ZLIB_INCLUDE_DIR})
-#  ELSE(ZLIB_FOUND)
-#    # We need to set this as a cache variable, so that it will show up as
-#    # being turned off in the cache.
-#    MESSAGE("warning: Turning off Teem_ZLIB, because it wasn't found.")
-#    SET(Teem_ZLIB OFF CACHE BOOL "Build Teem with support for gzip compression." FORCE)
-#  ENDIF(ZLIB_FOUND)
-#
-#  IF(Teem_PNG)
-#    FIND_PACKAGE(PNG)
-#    IF(PNG_FOUND)
-#      ADD_DEFINITIONS(-DTEEM_PNG ${PNG_DEFINITIONS})
-#      SET(Teem_PNG_LIB ${PNG_LIBRARIES})
-#      SET(Teem_PNG_IPATH ${PNG_INCLUDE_DIR})
-#    ELSE(PNG_FOUND)
-#      # We need to set this as a cache variable, so that it will show up as
-#      # being turned off in the cache.
-#      MESSAGE("warning: Turning off Teem_PNG, because it wasn't found.")
-#      SET(Teem_PNG OFF CACHE BOOL "Build Teem with support for PNG images." FORCE)
-#    ENDIF(PNG_FOUND)
-#  ENDIF(Teem_PNG)
-#ENDIF(Teem_ZLIB)
-#
+IF(Teem_ZLIB)
+  # Find ZLIB
+  IF(Zlib_DIR)
+    FIND_PACKAGE(Zlib CONFIGS ZlibConfig.cmake HINTS ${Zlib_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
+    INCLUDE(${ZLIB_USE_FILE})
+  ELSE()
+    MESSAGE(FATAL_ERROR "zlib library is required to compile Teem.")
+  ENDIF()
+  ADD_DEFINITIONS(-DTEEM_ZLIB)
+  SET(Teem_ZLIB_LIB ${SCI_ZLIB_LIBRARY})
+  SET(Teem_ZLIB_IPATH ${SCI_ZLIB_INCLUDE})
+
+  IF(Teem_PNG)
+    IF(LibPNG_DIR)
+      FIND_PACKAGE(LibPNG CONFIGS LibPNGConfig.cmake HINTS ${LibPNG_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
+      INCLUDE(${PNG_USE_FILE})
+      ADD_DEFINITIONS(-DTEEM_PNG ${PNG_DEFINITIONS})
+      SET(Teem_PNG_LIB ${SCI_PNG_LIBRARY})
+      SET(Teem_PNG_IPATH ${SCI_PNG_INCLUDE})
+    ELSE()
+      MESSAGE(FATAL_ERROR "png library is required to compile Teem.")
+    ENDIF()
+  ENDIF(Teem_PNG)
+ENDIF(Teem_ZLIB)
+
 ## Try and locate BZIP2 stuff
 #OPTION(Teem_BZIP2 "Build Teem with support for bzip compression." ON)
 #SET(Teem_BZIP2_LIB "")
@@ -372,8 +364,8 @@ ENDFOREACH(dir ${Teem_LIBRARIES})
 
 SET(SCI_TEEM_LIBRARY teem CACHE INTERNAL "Teem library" FORCE)
 
-# Create the library target
-ADD_LIBRARY(${SCI_TEEM_LIBRARY} ${Teem_SOURCES})
+# Create the library target (static build forced)
+ADD_LIBRARY(${SCI_TEEM_LIBRARY} STATIC ${Teem_SOURCES})
 
 # Set up some library paths for installation.  Windows will ingore the
 # RPATH stuff, and mac will ingore the INSTALL_RPATH.  Make sure for
@@ -390,21 +382,19 @@ ADD_LIBRARY(${SCI_TEEM_LIBRARY} ${Teem_SOURCES})
 IF(Teem_BZIP2_LIB)
   TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_BZIP2_LIB})
 ENDIF(Teem_BZIP2_LIB)
-IF(Teem_ZLIB)
-  IF(CMAKE_GENERATOR MATCHES "Makefiles")
-    TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY}
-      ${ZLIB_LIBRARY}
-    )
-  ELSE()
-    TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY}
-	  optimized ${ZLIB_LIBRARY_RELEASE}
-	  debug ${ZLIB_LIBRARY_DEBUG}
-	)
-  ENDIF()
-  IF(Teem_PNG_LIB)
-    TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_PNG_LIB})
-  ENDIF(Teem_PNG_LIB)
-ENDIF()
+
+#IF(CMAKE_GENERATOR MATCHES "Makefiles")
+#  TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY}
+#    ${ZLIB_LIBRARY}
+#)
+#ELSE()
+#  TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY}
+#  optimized ${ZLIB_LIBRARY_RELEASE}
+# debug ${ZLIB_LIBRARY_DEBUG}
+#)
+#ENDIF()
+
+TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_ZLIB_LIB} ${Teem_PNG_LIB})
 
 IF(Teem_LEVMAR_LIB)
   TARGET_LINK_LIBRARIES(${SCI_TEEM_LIBRARY} ${Teem_LEVMAR_LIB})
