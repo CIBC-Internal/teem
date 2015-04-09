@@ -431,6 +431,9 @@ IF(BUILD_HEX)
   ADD_SUBDIRECTORY(src/hex)
 ENDIF(BUILD_HEX)
 
+OPTION(Teem_USE_NRRD_INTERNALS "Add src/nrrd directory to list of include directories in package config file." OFF)
+MARK_AS_ADVANCED(Teem_USE_NRRD_INTERNALS)
+
 #-----------------------------------------------------------------------------
 # For testing
 #OPTION(BUILD_TESTING "Enable this to perform testing of Teem" OFF)
@@ -484,6 +487,10 @@ SET(Teem_CV_BUILD_SETTINGS_FILE ${Teem_BINARY_DIR}/TeemBuildSettings.cmake)
 SET(Teem_CV_BUILT_LIBRARIES ${SCI_TEEM_LIBRARY}) # The libraries built by teem.  Currently we only build the mega library.
 
 SET(SCI_TEEM_INCLUDE "${Teem_BINARY_DIR}/include")
+# SCI: need nrrd dir for privateNrrd.h
+IF(Teem_USE_NRRD_INTERNALS)
+  LIST(APPEND SCI_TEEM_INCLUDE "${Teem_SOURCE_DIR}/src/nrrd")
+ENDIF()
 
 CONFIGURE_FILE("${Teem_SOURCE_DIR}/CMake/TeemConfig.cmake.in"
   "${Teem_BINARY_DIR}/TeemConfig.cmake" @ONLY IMMEDIATE)
