@@ -34,6 +34,9 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
 IF(COMMAND cmake_policy)
   # Library paths (/path/to/libmy.so not translated to -L/path/to -lmy)
   CMAKE_POLICY(SET CMP0003 NEW)
+  IF(CMAKE_MAJOR_VERSION MATCHES "3")
+    CMAKE_POLICY(SET CMP0054 NEW)
+  ENDIF(CMAKE_MAJOR_VERSION MATCHES "3")
 ENDIF(COMMAND cmake_policy)
 
 PROJECT(Teem)
@@ -466,9 +469,7 @@ MARK_AS_ADVANCED(Teem_USE_NRRD_INTERNALS)
 
 #-----------------------------------------------------------------------------
 # Help outside projects build Teem projects.
-INCLUDE(CMakeExportBuildSettings)
 EXPORT_LIBRARY_DEPENDENCIES(${Teem_BINARY_DIR}/TeemLibraryDepends.cmake)
-CMAKE_EXPORT_BUILD_SETTINGS(${Teem_BINARY_DIR}/TeemBuildSettings.cmake)
 
 SET(CFLAGS "${CMAKE_C_FLAGS}")
 SET(CC "${CMAKE_C_COMPILER}")
