@@ -463,10 +463,12 @@ ENDIF(BUILD_HEX)
 #ENDIF(BUILD_TESTING)
 
 #-----------------------------------------------------------------------------
+# Export no longer supported in CMake 3
+#
 # Help outside projects build Teem projects.
-INCLUDE(CMakeExportBuildSettings)
-EXPORT_LIBRARY_DEPENDENCIES(${Teem_BINARY_DIR}/TeemLibraryDepends.cmake)
-CMAKE_EXPORT_BUILD_SETTINGS(${Teem_BINARY_DIR}/TeemBuildSettings.cmake)
+#INCLUDE(CMakeExportBuildSettings)
+#EXPORT_LIBRARY_DEPENDENCIES(${Teem_BINARY_DIR}/TeemLibraryDepends.cmake)
+#CMAKE_EXPORT_BUILD_SETTINGS(${Teem_BINARY_DIR}/TeemBuildSettings.cmake)
 
 SET(CFLAGS "${CMAKE_C_FLAGS}")
 SET(CC "${CMAKE_C_COMPILER}")
