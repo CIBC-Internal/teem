@@ -42,12 +42,14 @@ SET(Teem_USE_FILE "@Teem_CV_USE_FILE@")
 SET(Teem_EXECUTABLE_DIRS "@Teem_CV_EXECUTABLE_DIRS@")
 SET(Teem_LIBRARY_DIRS "@Teem_CV_LIBRARY_DIRS@")
 SET(Teem_INCLUDE_DIRS "@Teem_CV_INCLUDE_DIRS@")
+SET(SCI_TEEM_INCLUDE "@SCI_TEEM_INCLUDE@")
 
 # The Teem libraries.
-SET(Teem_LIBRARIES "@Teem_CV_BUILT_LIBRARIES@")
+#SET(Teem_LIBRARIES "@Teem_CV_BUILT_LIBRARIES@")
+SET(SCI_TEEM_LIBRARY "@SCI_TEEM_LIBRARY@")
 
 # The C flags added by Teem to the cmake-configured flags.
-SET(Teem_REQUIRED_C_FLAGS "@Teem_REQUIRED_C_FLAGS@")
+#SET(Teem_REQUIRED_C_FLAGS "@Teem_REQUIRED_C_FLAGS@")
 
 # The Teem version number
 SET(Teem_VERSION_MAJOR "@Teem_VERSION_MAJOR@")
@@ -55,10 +57,10 @@ SET(Teem_VERSION_MINOR "@Teem_VERSION_MINOR@")
 SET(Teem_VERSION_PATCH "@Teem_VERSION_PATCH@")
 
 # Is Teem using shared libraries?
-SET(Teem_BUILD_SHARED_LIBS "@BUILD_SHARED_LIBS@")
+#SET(Teem_BUILD_SHARED_LIBS "@BUILD_SHARED_LIBS@")
 
 # The list of tools in teem
-SET(Teem_TOOLS "@Teem_TOOLS@")
+#SET(Teem_TOOLS "@Teem_TOOLS@")
 
 # The Teem library dependencies.
 #IF(NOT Teem_NO_LIBRARY_DEPENDS)
