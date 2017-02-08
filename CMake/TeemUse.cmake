@@ -26,7 +26,7 @@ IF(NOT Teem_FOUND)
 ENDIF(NOT Teem_FOUND)
 
 # Make Teem easier to use
-INCLUDE_DIRECTORIES(${Teem_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${SCI_TEEM_INCLUDE})
 LINK_DIRECTORIES(${Teem_LIBRARY_DIRS})
 
 # Load the compiler settings used for Teem.
