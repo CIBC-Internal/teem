@@ -22,24 +22,12 @@
 #
 
 # This is the root Teem CMakeLists file
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
 
 # Cmake shouldn't define WIN32 when compiling
 set(CMAKE_LEGACY_CYGWIN_WIN32 0) 
 
-# As of CMake 2.6 Policies were introduced in order to provide a mechanism for
-# adding backwards compatibility one feature at a time.
-
-# Run cmake --help-policy CMP<num> to see documentation.
-IF(COMMAND cmake_policy)
-  # Library paths (/path/to/libmy.so not translated to -L/path/to -lmy)
-  CMAKE_POLICY(SET CMP0003 NEW)
-  IF(CMAKE_VERSION VERSION_GREATER 3.1)
-    CMAKE_POLICY(SET CMP0054 NEW)
-  ENDIF()
-ENDIF()
-
-PROJECT(Teem)
+PROJECT(Teem LANGUAGES C)
 
 #-----------------------------------------------------------------------------
 # Teem version number.  Must reflect the values in teem/src/air/air.h
@@ -510,6 +498,17 @@ CONFIGURE_FILE("${Teem_SOURCE_DIR}/CMake/TeemConfig.cmake.in"
   "${Teem_BINARY_DIR}/TeemConfig.cmake" @ONLY IMMEDIATE)
 EXPORT(TARGETS ${SCI_TEEM_LIBRARY} FILE TeemExports.cmake)
 
+# Install headers
+install(FILES ${Teem_INSTALLED_HEADER_FILES}
+  DESTINATION include/teem
+)
+
+# Install the library
+install(TARGETS teem
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 # SCI change: disable install directives
 # For install tree usage
 #
