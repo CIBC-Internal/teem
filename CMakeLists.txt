@@ -84,8 +84,8 @@ SET(Teem_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 ADD_DEFINITIONS(-DTEEM_STATIC)
 #ENDIF()
 
-SET(Teem_ZLIB ON CACHE BOOL "Build Teem with support for gzip compression." FORCE)
-SET(Teem_PNG ON CACHE BOOL "Build Teem with support for PNG images." FORCE)
+#SET(Teem_ZLIB ON CACHE BOOL "Build Teem with support for gzip compression." FORCE)
+#SET(Teem_PNG ON CACHE BOOL "Build Teem with support for PNG images." FORCE)
 
 #OPTION(Teem_VTK_MANGLE "Build Teem using the mangled libraries from VTK for ZLIB and PNG." OFF)
 #SET(Teem_VTK_ZLIB_MANGLE_IPATH "" CACHE PATH "Location of vtk_zlib_mangle.h")
