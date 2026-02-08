@@ -22,7 +22,7 @@
 #
 
 # This is the root Teem CMakeLists file
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 # Cmake shouldn't define WIN32 when compiling
 set(CMAKE_LEGACY_CYGWIN_WIN32 0)
